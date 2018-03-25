@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Bayesian Classification</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Bayesian Classification</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <div class="container" style="margin-top: 20px">
+        <div class="card bg-light mb-3">
+            <div class="card-header">Bayesian Classification</div>
+            <div class="card-body">
+              <div class="row">
+                  <div class="col"  style="height: 400px;overflow-y: scroll">
+                      <table class="table">
+                          <thead>
+                              <tr>
+                                  <th>X(1)</th>
+                                  <th>X(2)</th>
+                                  <th>X(3)</th>
+                                  <th>X(4)</th>
+                                  <th>X(5)</th>
+                                  <th>X(6)</th>
+                                  <th>X(7)</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {% for data in datasets %}
+                              <tr>
+                                  {% for x in data %}
+                                    <td>{{ x }}</td>
+                                  {% endfor %}
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+                  <div class="col">
+                      <h5 class="card-title">Testing</h5>
+
+                      <form action="testing" id="test-form">
+                          <div class="row">
+                              <div class="col">
+                                    <label>X(1)</label>
+                                    <input class="form-control" type="number" name="x[]"/>
+                              </div>
+                              <div class="col">
+                                    <label>X(2)</label>
+                                    <input class="form-control" type="number" name="x[]"/>
+                              </div>
+                              <div class="col">
+                                    <label>X(3)</label>
+                                    <input class="form-control" type="number" name="x[]"/>
+                              </div>
+                              <div class="col">
+                                    <label>X(4)</label>
+                                    <input class="form-control" type="number" name="x[]"/>
+                              </div>
+                              <div class="col">
+                                    <label>X(5)</label>
+                                    <input class="form-control" type="number" name="x[]"/>
+                              </div>
+                              <div class="col">
+                                    <label>X(6)</label>
+                                    <input class="form-control" type="number" name="x[]"/>
+                              </div>
+                              <div class="col">
+                                    <label>X(7)</label>
+                                    <input class="form-control" type="number" name="x[]"/>
+                              </div>
+                          </div>
+                          <button class="btn btn-primary">Test</button>
+                          <input type="reset" class="btn btn-primary"/>
+                      </form>
+
+                      <table class="table table-border">
+                          <thead>
+                              <tr>
+                                  <th>Kategori</th>
+                                  <th>Nilai bayes</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                                  <td>Normal</td>
+                                  <td id="normal">-</td>
+                              </tr>
+                              <tr>
+                                  <td>Siaga</td>
+                                  <td id="siaga">-</td>
+                              </tr>
+                              <tr>
+                                  <td>Waspada</td>
+                                  <td id="waspada">-</td>
+                              </tr>
+                              <tr>
+                                  <td>Awas</td>
+                                  <td id="awas">-</td>
+                              </tr>
+                          </thead>
+                      </table>
+                  </div>
+              </div>
+            </div>
+          </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script>
+        $('#test-form').submit(function (e) {
+            e.preventDefault()
+            
+            x = []
+            $('input[name^="x"]').each(function () {
+                x.push($(this).val())
+            })
+            
+            $.ajax({
+                url: '/testing',
+                type: 'GET',
+                data: 'data=' + x,
+                success: function (response) {
+                    max = Math.max(...response.hasil)
+                    indexmax = response.hasil.indexOf(max)
+
+                    switch(indexmax) {
+                        case 0:
+                            $('#normal').addClass('text-success')
+                            $('#siaga').removeClass('text-success')
+                            $('#waspada').removeClass('text-success')
+                            $('#awas').removeClass('text-success')
+                            break
+                        case 1:
+                            $('#siaga').addClass('text-success')
+                            $('#normal').removeClass('text-success')
+                            $('#waspada').removeClass('text-success')
+                            $('#awas').removeClass('text-success')
+                            break
+                        case 2:
+                            $('#waspada').addClass('text-success')
+                            $('#siaga').removeClass('text-success')
+                            $('#normal').removeClass('text-success')
+                            $('#awas').removeClass('text-success')
+                            break
+                        case 3:
+                            $('#awas').addClass('text-success')
+                            $('#siaga').removeClass('text-success')
+                            $('#waspada').removeClass('text-success')
+                            $('#normal').removeClass('text-success')
+                            break
+                    }
+
+                    $('#normal').text(response.hasil[0])
+                    $('#siaga').text(response.hasil[1])
+                    $('#waspada').text(response.hasil[2])
+                    $('#awas').text(response.hasil[3])
+                }
+            })
+        })    
+    </script>
+</body>
+</html>
